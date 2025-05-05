@@ -1,16 +1,20 @@
 import socket
 
+# Vytvoření serverového soketu
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(('localhost', 12345))
-server_socket.listen()
+server_socket.bind(("localhost", 12345))
+server_socket.listen(1)
+print("Server čeká na připojení...")
 
-print("Server čaká na pripojenia...")
-client_socket, client_address = server_socket.accept()
-print(f"Pripojil sa klient: {client_address}")
+conn, addr = server_socket.accept()
+print(f"Připojení od: {addr}")
 
-message = client_socket.recv(1024).decode()
-print(f"Správa od klienta: {message}")
-client_socket.sendall("Správa prijatá".encode())
+while True:
+    data = conn.recv(1024).decode()
+    if not data or data.lower() == "exit":
+        break
+    print(f"Klient: {data}")
+    conn.send(f"Server přijal: {data}".encode())
 
-client_socket.close()
+conn.close()
 server_socket.close()
